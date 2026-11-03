@@ -1,0 +1,26 @@
+{
+  "name": "harness-tutorial",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "ask": "npm run build && node dist/cli.js",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && node --test \"dist/**/*.test.js\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "typescript": "7.0.2"
+  },
+  "private": true,
+  "engines": {
+    "node": "24.x"
+  },
+  "dependencies": {
+    "@mastra/core": "1.82.0"
+  }
+}

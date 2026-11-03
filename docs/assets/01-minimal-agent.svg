@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 130" width="100%" height="100%">
+  <defs>
+    <style>
+      .text {
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      }
+      .title { font-size: 14px; font-weight: 600; fill: #1e293b; }
+      .sub { font-size: 11.5px; fill: #64748b; }
+      .code { font-size: 11.5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; fill: #475569; }
+    </style>
+
+    <marker id="arrow-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#3b82f6" />
+    </marker>
+  </defs>
+
+  <!-- Card Background -->
+  <rect x="0" y="0" width="720" height="130" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+
+  <!-- Left: CLI -->
+  <rect x="28" y="30" width="150" height="70" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="103" y="60" text-anchor="middle" class="text title">终端命令行</text>
+  <text x="103" y="80" text-anchor="middle" class="code">npm run ask</text>
+
+  <!-- Center: Mastra Agent + Workspace -->
+  <rect x="234" y="25" width="240" height="80" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.8" />
+  <text x="354" y="57" text-anchor="middle" class="text title" fill="#1e3a8a">个人资料助理 (Mastra Agent)</text>
+  <text x="354" y="80" text-anchor="middle" class="text sub" fill="#3b82f6">内置模型路由 + Workspace 文件工具</text>
+
+  <!-- Right: LLM API -->
+  <rect x="530" y="30" width="162" height="70" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="611" y="60" text-anchor="middle" class="text title">大模型 API</text>
+  <text x="611" y="80" text-anchor="middle" class="text sub">Chat Completions</text>
+
+  <!-- Arrows -->
+  <line x1="178" y1="65" x2="230" y2="65" stroke="#3b82f6" stroke-width="1.8" marker-end="url(#arrow-blue)" />
+  <line x1="478" y1="65" x2="526" y2="65" stroke="#94a3b8" stroke-width="1.8" marker-start="url(#arrow-gray)" marker-end="url(#arrow-gray)" />
+</svg>
