@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "ask": "npm run build && node dist/cli.js",
+    "wechat": "npm run build && node dist/wechat.js",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "test": "npm run build && node --test \"dist/**/*.test.js\""
@@ -21,6 +22,7 @@
     "node": "24.x"
   },
   "dependencies": {
-    "@mastra/core": "1.82.0"
+    "@mastra/core": "1.82.0",
+    "@wechatbot/wechatbot": "2.2.0"
   }
 }

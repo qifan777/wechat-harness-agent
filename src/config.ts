@@ -20,8 +20,10 @@ export interface ModelConfig {
 }
 
 export interface LoadModelConfigOptions {
-  env?: NodeJS.ProcessEnv;
-  envFilePath?: string;
+  env?: NodeJS.ProcessEnv | undefined;
+  envFilePath?: string | undefined;
+  wechatStorageDir?: string | undefined;
+  extraSecrets?: readonly (string | undefined)[] | undefined;
 }
 
 export class ConfigError extends Error {
@@ -111,11 +113,52 @@ export function validateQuestionArgs(args: readonly string[]): string {
   return question;
 }
 
+export function collectWeChatSecrets(
+  storageDir: string = path.resolve(process.cwd(), ".wechat"),
+): string[] {
+  const secrets: string[] = [];
+
+  try {
+    const credentialsPath = path.join(storageDir, "credentials.json");
+    if (fs.existsSync(credentialsPath)) {
+      const raw = fs.readFileSync(credentialsPath, "utf8");
+      const parsed = JSON.parse(raw) as Record<string, unknown>;
+      for (const field of ["token", "bot_token", "context_token"]) {
+        const val = parsed[field];
+        if (typeof val === "string" && val.trim().length > 0) {
+          secrets.push(val, val.trim());
+        }
+      }
+    }
+  } catch {
+    // Ignore read or parse errors when collecting WeChat credentials for redaction
+  }
+
+  try {
+    const contextTokensPath = path.join(storageDir, "context_tokens.json");
+    if (fs.existsSync(contextTokensPath)) {
+      const raw = fs.readFileSync(contextTokensPath, "utf8");
+      const parsed = JSON.parse(raw) as Record<string, unknown>;
+      for (const val of Object.values(parsed)) {
+        if (typeof val === "string" && val.trim().length > 0) {
+          secrets.push(val, val.trim());
+        }
+      }
+    }
+  } catch {
+    // Ignore read or parse errors when collecting context tokens for redaction
+  }
+
+  return secrets;
+}
+
 export function collectCandidateSecrets(
   options: LoadModelConfigOptions = {},
 ): string[] {
   const env = options.env ?? process.env;
   const envFilePath = options.envFilePath ?? path.resolve(process.cwd(), ".env");
+  const wechatStorageDir =
+    options.wechatStorageDir ?? path.resolve(process.cwd(), ".wechat");
   const secrets: string[] = [];
 
   if (typeof env.MODEL_API_KEY === "string" && env.MODEL_API_KEY.trim().length > 0) {
@@ -132,6 +175,16 @@ export function collectCandidateSecrets(
     }
   } catch {
     // Ignore file read errors when collecting candidate secrets for redaction
+  }
+
+  secrets.push(...collectWeChatSecrets(wechatStorageDir));
+
+  if (options.extraSecrets) {
+    for (const secret of options.extraSecrets) {
+      if (typeof secret === "string" && secret.trim().length > 0) {
+        secrets.push(secret, secret.trim());
+      }
+    }
   }
 
   return secrets;
