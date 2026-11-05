@@ -74,3 +74,17 @@ npm test
 ## 参考资料
 
 [Mastra 文档](https://mastra.ai/docs) · [Mastra Memory](https://mastra.ai/docs/memory/overview) · [OpenSpec](https://github.com/Fission-AI/OpenSpec) · [WeChatBot SDK](https://github.com/corespeed-io/wechatbot) · [`@wechatbot/wechatbot` on npm](https://www.npmjs.com/package/@wechatbot/wechatbot)
+
+---
+
+## 联系方式
+
+gpt/claude/gemini/grok/muse代充：ljc666max
+
+详细价格查看https://shop.jarcheng.top/
+
+其他关于程序运行安装报错请加QQ群：
+
+- 416765656（满）
+- 632067985（满）
+- 1102705673

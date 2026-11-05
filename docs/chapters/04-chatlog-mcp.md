@@ -160,3 +160,17 @@ npm run wechat
 2. **第 02 章（通道）**：通过微信 ClawBot 把它装进手机，处理好"正在输入"、长消息切分与频控退避
 3. **第 03 章（记忆）**：用 `@mastra/memory` + `@mastra/libsql` 区分单次会话历史（`Thread`）与跨话题长期偏好（`Resource Working Memory`）
 4. **第 04 章（扩展）**：把开源项目 `chatlog-archive` 改造成定时增量同步的 MCP 服务，通过 `@mastra/mcp` 动态挂载给助理，跑通"查真实聊天记录 → 按个人偏好加工 → 落盘生成文档"的完整闭环
+
+---
+
+## 联系方式
+
+gpt/claude/gemini/grok/muse代充：ljc666max
+
+详细价格查看https://shop.jarcheng.top/
+
+其他关于程序运行安装报错请加QQ群：
+
+- 416765656（满）
+- 632067985（满）
+- 1102705673
