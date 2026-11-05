@@ -1,75 +1,69 @@
-# 用 AI 做一个微信个人 Agent 助理
+# 用 AI 做一个微信个人助理
 
-在微信里发一句话，你电脑上的助理就去查你的历史聊天记录、读本地资料、按你的习惯整理待办并保存成文档。从空目录开始，一章加一项核心能力，共 4 章。
+在手机微信里发一句话，你电脑上的 AI 助理就去翻聊天记录、读本地资料，把待办按你的习惯整理好，存成一份文档。
 
-![用 AI 做一个微信个人 Agent 助理](docs/assets/cover.svg)
+![用 AI 做一个微信个人助理](docs/assets/cover.svg)
 
-## 三大核心亮点（零基础小白也能跟着做出来）
+这个教程不要求你会写代码。你只需要会复制粘贴：把想要的功能用中文告诉 AI 编程工具，写代码、跑测试、修错误都交给它。我们从一个空文件夹开始，一共 4 章，每章多一项本事。
 
-1. **微信官方 ClawBot 插件聊天（免公网服务器、安全稳定）**
-   不用折腾容易封号的第三方破解协议，也不需要购买云服务器配置繁琐的回调域名。直接扫码连接微信官方的 **ClawBot** 插件，在手机微信里发文字、按住说语音（直接复用微信自带语音转文字）、发图片或文件，就能随时随地指挥你电脑上的 AI 助理。
-2. **微信聊天记录导出 MCP 工具（自动增量同步、群聊秒总结）**
-   手把手带你用 AI 改造开源微信聊天记录解密项目 `chatlog-archive`，把原本只能手动跑脚本全量导出的工具，升级为**后台每 60 秒自动增量同步**的标准 **MCP（Model Context Protocol）服务**。助理可以按需搜索任意群聊与私聊历史，"帮我看看某群最近一周聊了什么"一句话秒出总结。
-3. **Harness Agent 工程实战（不手写代码，用大白话驱动 AI 开发）**
-   不只是调个大模型接口聊天，而是搭建一个真正能干活的 **Harness Agent**：自带本地工作目录文件读写（Workspace）、多步自主工具调用循环（ReAct）以及跨会话长期个人偏好记忆（Memory）。全程采用 **OpenSpec 规格驱动开发（SDD）**——每章只需把中文需求发给 AI 编程工具，从写代码、跑测试到修 Bug 全部由 AI 完成，小白也能稳稳复现。
+## 做完之后，你能得到什么
 
-## 一章一句话
+**微信官方 ClawBot 插件，直接在微信里使唤它。** 不用第三方破解协议，不用买云服务器，扫个码就能连上。文字、语音、图片、文件都可以发，它在你自己的电脑上干活。
 
-每章结束时，你能对它多说一类话：
+**微信聊天记录 MCP 工具，群聊总结一句话搞定。** 教程会带你把开源项目 `chatlog-archive` 改造成后台每 60 秒自动增量同步的 MCP（Model Context Protocol）服务。助理可以按需搜索任意群聊和私聊的历史，"帮我看看某个群最近一周聊了什么"，问一句就有总结。
+
+**Harness Agent 工程实战，不手写代码。** 不只是调个大模型接口聊天，而是搭一个真正能干活的 Harness Agent：能读写本地工作目录（Workspace），能自己多步调用工具完成任务（ReAct 循环），还能跨会话记住你的个人偏好（Memory）。全程用 OpenSpec 规格驱动开发（SDD）：每章把中文需求发给 AI 编程工具，写代码、跑测试、修 Bug 都由它完成。
+
+## 一章一件事
+
+每学完一章，你就能多对它说一类话：
 
 | 章节 | 你对它说 | 这一章做了什么 |
 | --- | --- | --- |
-| [01 用 AI 创建你的第一个 Agent](docs/chapters/01-minimal-agent.md) | 随便问一个问题 / 读写工作目录 | 用 AI 建项目，配好模型 API，启用 Mastra 内置 Workspace 与 ReAct 多步工具循环 |
-| [02 在微信里使用它](docs/chapters/02-wechat-agent.md) | 在手机微信上发消息 | 浏览器打开链接扫码关联微信，处理"正在输入"、长回复分段和发送限速 |
-| [03 让它记住对话和偏好](docs/chapters/03-agent-memory.md) | "把第二项展开说说" "记住，以后按负责人分组" | 连续追问，重启后续聊，开启新话题长期偏好还在 |
-| [04 改造开源聊天归档项目并通过 MCP 接入助理](docs/chapters/04-chatlog-mcp.md) | "搜一下关于预算的聊天记录" "总结群聊并存成 Markdown" | 把只能手动全量导出的 `chatlog-archive` 改造成定时增量同步的 MCP 服务器，并接入微信助理 |
+| [01 用 AI 创建你的第一个 Agent](docs/chapters/01-minimal-agent.md) | "随便问个问题" "在工作目录里存个文件" | 用 AI 建项目，接上模型 API，启用 Mastra 内置的 Workspace 和 ReAct 多步工具循环 |
+| [02 把它搬进微信](docs/chapters/02-wechat-agent.md) | 在手机微信上发消息 | 扫码连上微信，让它回复时会显示"正在输入"，长回复自动分段 |
+| [03 让它记住你](docs/chapters/03-agent-memory.md) | "把第二项展开说说" "记住，以后按负责人分组" | 能连续追问，重启后接着聊，换新话题时你的偏好依然保留 |
+| [04 改造聊天归档项目，通过 MCP 接入助理](docs/chapters/04-chatlog-mcp.md) | "搜一下关于预算的聊天记录" "总结这个群，存成 Markdown" | 把只能手动全量导出的 `chatlog-archive` 改造成定时增量同步的 MCP 服务器，接入微信助理 |
 
-## 快速开始
+## 开始之前
 
-不看教程，也可以直接把当前的助理跑起来。仓库目前提供的是命令行版本，微信等能力随章节逐步加入。
+你需要准备：
 
-**准备：**
+- 一台电脑（Windows、macOS、Linux 都行），装好 Node.js 24
+- 一个大模型的接口地址、密钥和模型名（需要支持工具调用，后面的章节要用）
+- 从第 2 章开始：一个能使用 ClawBot 插件的微信号
 
-- Node.js 24 和 npm（`node -v` 能看到 v24.x），Windows、macOS、Linux 均可
-- 一个模型 API 的基础地址、API Key 和模型名（OpenAI Chat Completions 格式；后面的章节要调用工具，模型需支持 Tool Calling）
-- 第 2 章起：一个能使用 ClawBot 插件的微信号，以及一台能打开浏览器的电脑
+先说一件要当心的事：这个助理可以读写你电脑上的文件，也能执行命令。刚开始试的时候，建议只让它使用项目里专门的 `workspace` 文件夹，不要指向存着重要资料的目录。
 
-**运行：**
+## 先跑起来看看
 
-1. 克隆本仓库，进入项目根目录。
-2. 安装依赖，并复制配置模板：
+看不懂命令也没关系，第 1 章会一步步带你做。想先试试的话：
 
 ```sh
 npm ci
-cp .env.example .env
-```
-
-3. 在 `.env` 中填写 `MODEL_BASE_URL`、`MODEL_API_KEY`、`MODEL_NAME`（模板已预填 `MODEL_BASE_URL=https://ai.jarcheng.top/` 与 `MODEL_NAME=gpt-6.1-sol`，填入 `MODEL_API_KEY` 即可）。基础地址不要带 `/chat/completions`，服务要求 `/v1` 的话就保留。
-4. 提一个问题：
-
-```sh
+cp .env.example .env   # 打开 .env，填入模型的接口地址、密钥和模型名
 npm run ask -- "用一句话介绍你自己"
 ```
 
-看到一段中文回答，就说明项目已经调通了你的模型。助理已内置工作目录文件读写与本地命令执行工具（默认工作目录为 `./workspace/`，也不限制访问外部路径），也可以执行：
+看到一段中文回答，就说明模型接通了。接着运行 `npm run wechat`，按终端提示用手机微信扫码，就能在微信里和它私聊。发 `新对话` 可以开启新话题，它记住的偏好会保留。
 
-```sh
-npm run ask -- "在工作目录创建 hello.md，写一句问候"
-```
+运行中遇到报错，把错误信息复制给 AI，一般都能帮你解决。
 
-5. 启动微信常驻监听，在手机微信里与助理私聊：
+## 给想了解细节的人
 
-```sh
-npm run wechat
-```
+开发方式叫"规格驱动开发"：先用文字写清楚助理该有什么行为，再让 AI 照着实现，最后自己运行验证。AI 写偏了，有规格可以对照；每次改动也都有记录。规格用 [OpenSpec](https://github.com/Fission-AI/OpenSpec) 管理（版本 1.16.0，`spec-driven` 模板）。
 
-首次启动时，终端会打印二维码登录链接，复制该链接到浏览器打开并用手机微信扫码确认登录；登录成功后凭证保存在项目本地 `.wechat/` 目录（已被 `.gitignore` 忽略），后续重启会自动复用登录状态无需重复扫码。启动后即可在微信私聊里发送文字、语音、表情、图片/文件或引用消息与助理对话。
+| 用途 | 用什么 |
+| --- | --- |
+| 语言与运行环境 | TypeScript、Node.js、npm |
+| 助理框架 | Mastra |
+| 模型接口 | OpenAI Chat Completions 格式 |
+| 对话与记忆 | `@mastra/memory` |
+| 本地存储 | `@mastra/libsql` |
+| 微信接入 | `@wechatbot/wechatbot` 2.2.0 |
+| 聊天记录接入 | Mastra 的 MCP 集成 |
 
-6. 多轮追问、长期偏好记忆与开启新对话：
-   - 助理会将多轮会话历史与长期个人偏好保存在本地 `.memory/` 目录（无需部署外部数据库，重启后依然保留）。
-   - 在微信里发送 `新对话`（或 `/new`），或在终端运行 `npm run ask -- --new`，可开启全新对话线程（隔离旧话题上下文，但继续保留已记住的长期偏好）。
-
-**常用检查与测试命令：**
+开发时常用的检查命令：
 
 ```sh
 npm run typecheck
@@ -77,32 +71,6 @@ npm run build
 npm test
 ```
 
-**常见报错与排查：**
-
-- `用法：npm run ask -- "问题"（请提供一个非空问题）`：请确保传入恰好一个非空问题参数（带空格的问题请用引号包裹）。
-- `缺少必要的环境变量：<变量名>，请配置后重试`：检查根目录 `.env` 或当前终端环境中是否已完整填写 `MODEL_BASE_URL`、`MODEL_API_KEY`、`MODEL_NAME`。
-- `模型调用失败，请检查基础地址、密钥、模型名及网络后重试`：
-  - **基础地址（`MODEL_BASE_URL`）**：确认地址可访问、未多余拼接 `/chat/completions`，并根据服务要求检查是否需要保留 `/v1`。
-  - **密钥（`MODEL_API_KEY`）**：确认 API Key 有效且与当前服务地址匹配。
-  - **模型名（`MODEL_NAME`）**：确认模型名称拼写无误且当前账号有权限调用。
-  - **网络**：确认本机网络或代理可正常访问目标模型服务。
-
-想了解它是怎么一步步做出来的，按上面的章节表阅读即可。
-
-## 技术栈
-
-| 用途 | 用什么 |
-| --- | --- |
-| 语言与运行 | TypeScript、Node.js、npm |
-| Agent | Mastra |
-| 模型接口 | OpenAI Chat Completions 格式 |
-| 会话与记忆 | `@mastra/memory` |
-| 本地存储 | `@mastra/libsql`，不用另外部署数据库 |
-| 微信接入 | `@wechatbot/wechatbot` 2.2.0 |
-| 外部工具 | Mastra MCP 集成 |
-
-开发方式是规格驱动开发（SDD）：先写清楚它该有什么行为，再让 AI 照着实现，最后自己运行验证。AI 写偏了有规格可以对照，每次改动也有记录。规格用 [OpenSpec](https://github.com/Fission-AI/OpenSpec) 管理，版本 `1.16.0`，使用 `spec-driven` 模板。
-
 ## 参考资料
 
-[Mastra 文档](https://mastra.ai/docs) · [Mastra Memory](https://mastra.ai/docs/memory/overview) · [OpenSpec](https://github.com/Fission-AI/OpenSpec) · [WeChatBot SDK（微信 iLink Bot）](https://github.com/corespeed-io/wechatbot) · [`@wechatbot/wechatbot` on npm](https://www.npmjs.com/package/@wechatbot/wechatbot)
+[Mastra 文档](https://mastra.ai/docs) · [Mastra Memory](https://mastra.ai/docs/memory/overview) · [OpenSpec](https://github.com/Fission-AI/OpenSpec) · [WeChatBot SDK](https://github.com/corespeed-io/wechatbot) · [`@wechatbot/wechatbot` on npm](https://www.npmjs.com/package/@wechatbot/wechatbot)
