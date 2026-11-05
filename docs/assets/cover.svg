@@ -71,17 +71,17 @@
 
     <!-- capability chips -->
     <g>
-        <rect x="80" y="392" width="132" height="38" rx="19" fill="#ffffff" stroke="#e5e1da" stroke-width="1.5"/>
-        <use href="#i-search" x="94" y="401" width="20" height="20" color="#1a7f4b"/>
-        <text x="120" y="417" font-size="15" fill="#1f2328">查聊天记录</text>
+        <rect x="80" y="392" width="176" height="38" rx="19" fill="#ffffff" stroke="#e5e1da" stroke-width="1.5"/>
+        <use href="#i-chat" x="94" y="401" width="20" height="20" color="#1a7f4b"/>
+        <text x="120" y="417" font-size="15" font-weight="600" fill="#1f2328">微信官方 ClawBot</text>
 
-        <rect x="224" y="392" width="132" height="38" rx="19" fill="#ffffff" stroke="#e5e1da" stroke-width="1.5"/>
-        <use href="#i-file" x="238" y="401" width="20" height="20" color="#1a7f4b"/>
-        <text x="264" y="417" font-size="15" fill="#1f2328">读本地资料</text>
+        <rect x="268" y="392" width="166" height="38" rx="19" fill="#ffffff" stroke="#e5e1da" stroke-width="1.5"/>
+        <use href="#i-plug" x="282" y="401" width="20" height="20" color="#1a7f4b"/>
+        <text x="308" y="417" font-size="15" font-weight="600" fill="#1f2328">聊天记录导出 MCP</text>
 
-        <rect x="368" y="392" width="132" height="38" rx="19" fill="#ffffff" stroke="#e5e1da" stroke-width="1.5"/>
-        <use href="#i-folder" x="382" y="401" width="20" height="20" color="#1a7f4b"/>
-        <text x="408" y="417" font-size="15" fill="#1f2328">存成文档</text>
+        <rect x="446" y="392" width="156" height="38" rx="19" fill="#ffffff" stroke="#e5e1da" stroke-width="1.5"/>
+        <use href="#i-terminal" x="460" y="401" width="20" height="20" color="#1a7f4b"/>
+        <text x="486" y="417" font-size="15" font-weight="600" fill="#1f2328">Harness Agent</text>
     </g>
 
     <!-- right: chat card (WeChat-like) -->
