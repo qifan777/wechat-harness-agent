@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 220" width="100%" height="100%">
+  <defs>
+    <style>
+      .text {
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      }
+      .title { font-size: 14px; font-weight: 600; fill: #1e293b; }
+      .sub { font-size: 11.5px; fill: #64748b; }
+      .code { font-size: 11.5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; fill: #475569; }
+      .tag { font-size: 11px; font-weight: 600; fill: #047857; }
+    </style>
+
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#3b82f6" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#10b981" />
+    </marker>
+  </defs>
+
+  <!-- Card Background -->
+  <rect x="0" y="0" width="760" height="220" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+
+  <!-- Left: Entry -->
+  <rect x="28" y="42" width="150" height="136" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="103" y="84" text-anchor="middle" class="text title">微信 / 命令行</text>
+  <text x="103" y="114" text-anchor="middle" class="code">npm run wechat</text>
+  <text x="103" y="138" text-anchor="middle" class="code">npm run ask</text>
+
+  <line x1="178" y1="110" x2="222" y2="110" stroke="#3b82f6" stroke-width="1.8" marker-end="url(#arrow-blue)" />
+
+  <!-- Center: Mastra Agent -->
+  <rect x="226" y="30" width="236" height="160" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.8" />
+  <text x="344" y="60" text-anchor="middle" class="text title" fill="#1e3a8a">个人资料助理 (Agent)</text>
+  <text x="344" y="84" text-anchor="middle" class="text sub" fill="#3b82f6">文件 (Workspace) · 记忆 (Memory)</text>
+
+  <rect x="250" y="102" width="188" height="68" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5" />
+  <text x="344" y="130" text-anchor="middle" class="text title" fill="#065f46">MCPClient</text>
+  <text x="344" y="152" text-anchor="middle" class="code" fill="#047857">@mastra/mcp</text>
+
+  <!-- Pipe Arrow -->
+  <line x1="466" y1="110" x2="526" y2="110" stroke="#10b981" stroke-width="1.8" marker-start="url(#arrow-green)" marker-end="url(#arrow-green)" />
+  <text x="496" y="98" text-anchor="middle" class="code" fill="#047857">stdio</text>
+  <text x="496" y="128" text-anchor="middle" class="text sub" fill="#047857">子进程管道</text>
+
+  <!-- Right: MCP Server -->
+  <rect x="530" y="30" width="202" height="160" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="1.8" />
+  <rect x="664" y="20" width="52" height="18" rx="4" fill="#d1fae5" />
+  <text x="690" y="33" text-anchor="middle" class="text tag">自动拉起</text>
+  <text x="631" y="64" text-anchor="middle" class="text title" fill="#065f46">微信归档 MCP 服务</text>
+  <text x="631" y="88" text-anchor="middle" class="code" fill="#047857">60_mcp_server.py</text>
+  <rect x="552" y="106" width="158" height="32" rx="6" fill="#ffffff" stroke="#a7f3d0" />
+  <text x="631" y="126" text-anchor="middle" class="code">archive.sqlite3</text>
+  <text x="631" y="164" text-anchor="middle" class="text sub" fill="#047857">后台每 60s 自动增量同步</text>
+</svg>

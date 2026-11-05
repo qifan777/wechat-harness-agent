@@ -29,6 +29,7 @@ import {
   rotateActiveThreadId,
   type MemoryContext,
 } from "./memory.js";
+import { connectChatlogMcpTools } from "./mcp.js";
 
 export const DEFAULT_MAX_REPLY_CHARS = 1500;
 export const DEFAULT_SEND_INTERVAL_MS = 1500;
@@ -710,9 +711,21 @@ export async function runWeChatDaemon(
     return 1;
   }
 
+  const mcpConnection = await connectChatlogMcpTools({
+    env: options.env,
+    envFilePath: options.envFilePath,
+  });
+  const mcpToolNames = Object.keys(mcpConnection.tools);
+  if (mcpToolNames.length > 0) {
+    stdout.write(
+      `[MCP] 已挂载 ${mcpToolNames.length} 个外部工具: ${mcpToolNames.join(", ")}\n`,
+    );
+  }
+
   const agent = createPersonalAssistantAgent(modelConfig, {
     workspaceDir,
     memoryDir,
+    tools: mcpConnection.tools,
   });
 
   fs.mkdirSync(storageDir, { recursive: true });
@@ -757,6 +770,7 @@ export async function runWeChatDaemon(
       },
     });
   } catch (loginError: unknown) {
+    await mcpConnection.disconnect();
     const detail =
       loginError instanceof Error ? loginError.message : String(loginError);
     stderr.write(

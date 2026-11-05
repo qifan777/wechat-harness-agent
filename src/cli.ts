@@ -15,6 +15,10 @@ import {
   isNewConversationCommand,
   rotateActiveThreadId,
 } from "./memory.js";
+import {
+  connectChatlogMcpTools,
+  type ChatlogMcpConnection,
+} from "./mcp.js";
 
 export interface RunCliOptions {
   argv?: readonly string[];
@@ -25,6 +29,7 @@ export interface RunCliOptions {
   stdout?: (text: string) => void;
   stderr?: (text: string) => void;
   createAgent?: typeof createPersonalAssistantAgent;
+  connectMcpTools?: typeof connectChatlogMcpTools;
 }
 
 function silenceConsole(): () => void {
@@ -63,9 +68,12 @@ export async function runCli(options: RunCliOptions = {}): Promise<number> {
   const writeStderr =
     options.stderr ?? ((text: string) => process.stderr.write(text));
   const createAgentFn = options.createAgent ?? createPersonalAssistantAgent;
+  const connectMcpToolsFn =
+    options.connectMcpTools ?? connectChatlogMcpTools;
 
   const secrets = collectCandidateSecrets({ env, envFilePath });
   const restoreConsole = silenceConsole();
+  let mcpConnection: ChatlogMcpConnection | undefined;
 
   try {
     const question = validateQuestionArgs(argv);
@@ -79,8 +87,13 @@ export async function runCli(options: RunCliOptions = {}): Promise<number> {
     const config = loadModelConfig({ env, envFilePath });
     secrets.push(config.apiKey);
 
+    mcpConnection = await connectMcpToolsFn({ env, envFilePath });
     const threadId = getOrCreateActiveThreadId(resourceId, memoryDir);
-    const agent = createAgentFn(config, { workspaceDir, memoryDir });
+    const agent = createAgentFn(config, {
+      workspaceDir,
+      memoryDir,
+      tools: mcpConnection.tools,
+    });
     const answer = await askPersonalAssistant(agent, question, secrets, {
       resource: resourceId,
       thread: threadId,
@@ -93,6 +106,9 @@ export async function runCli(options: RunCliOptions = {}): Promise<number> {
     writeStderr(`${message}\n`);
     return 1;
   } finally {
+    if (mcpConnection) {
+      await mcpConnection.disconnect();
+    }
     restoreConsole();
   }
 }

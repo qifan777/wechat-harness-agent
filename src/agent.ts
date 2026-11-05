@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { Agent } from "@mastra/core/agent";
+import { Agent, type ToolsInput } from "@mastra/core/agent";
 import { noopLogger } from "@mastra/core/logger";
 import {
   LocalFilesystem,
@@ -31,6 +31,7 @@ export interface CreateAgentOptions {
   workspaceDir?: string | undefined;
   memoryDir?: string | undefined;
   enableMemory?: boolean | undefined;
+  tools?: ToolsInput | undefined;
 }
 
 const IMAGE_MIME_BY_EXT: Record<string, string> = {
@@ -110,6 +111,11 @@ export function createPersonalAssistantAgent(
       ? undefined
       : createPersonalMemory({ memoryDir: resolvedMemoryDir }).memory;
 
+  const tools =
+    options.tools !== undefined && Object.keys(options.tools).length > 0
+      ? options.tools
+      : undefined;
+
   const agent = new Agent({
     id: ASSISTANT_ID,
     name: ASSISTANT_NAME,
@@ -121,6 +127,7 @@ export function createPersonalAssistantAgent(
     },
     workspace,
     ...(memory ? { memory } : {}),
+    ...(tools ? { tools } : {}),
     maxRetries: 0,
     errorProcessorDefaults: false,
   });
@@ -155,16 +162,37 @@ export async function askPersonalAssistant(
 
     const output = memoryContext
       ? await agent.generate(input, {
+          maxSteps: 15,
           memory: {
             resource: memoryContext.resource,
             thread: memoryContext.thread,
           },
         })
-      : await agent.generate(input);
+      : await agent.generate(input, {
+          maxSteps: 15,
+        });
     if (output.error) {
       throw new ModelCallError();
     }
-    const text = typeof output.text === "string" ? output.text.trim() : "";
+    const steps = Array.isArray(output.steps) ? output.steps : [];
+    const lastStep = steps.length > 0 ? steps[steps.length - 1] : undefined;
+    if (
+      lastStep &&
+      Array.isArray(lastStep.toolCalls) &&
+      lastStep.toolCalls.length > 0
+    ) {
+      throw new ModelCallError();
+    }
+    const lastStepText =
+      lastStep && typeof lastStep.text === "string"
+        ? lastStep.text.trim()
+        : "";
+    const text =
+      lastStepText.length > 0
+        ? lastStepText
+        : typeof output.text === "string"
+          ? output.text.trim()
+          : "";
     if (text.length === 0) {
       throw new ModelCallError();
     }

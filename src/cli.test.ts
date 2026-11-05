@@ -248,4 +248,44 @@ describe("CLI ask entrypoint (4.1 & 4.2)", () => {
     assert.ok(readme.includes("缺少必要的环境变量："));
     assert.ok(readme.includes(MODEL_CALL_ERROR_MESSAGE));
   });
+
+  it("disconnects MCP client in finally block after single Q&A or error (Chapter 04)", async () => {
+    const tempDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), "minimal-agent-cli-mcp-"),
+    );
+    const mockServer = await startMockOpenAIServer(() => ({
+      content: "MCP 问答已完成。",
+    }));
+
+    try {
+      let disconnectCalls = 0;
+      let out = "";
+      const code = await runCli({
+        argv: ["查询微信归档状态"],
+        cwd: tempDir,
+        env: {
+          MODEL_BASE_URL: mockServer.baseUrl,
+          MODEL_API_KEY: "sk-synth-cli-mcp",
+          MODEL_NAME: "gpt-6.1-sol",
+        },
+        stdout: (t) => {
+          out += t;
+        },
+        connectMcpTools: async () => ({
+          client: null,
+          tools: {},
+          disconnect: async () => {
+            disconnectCalls += 1;
+          },
+        }),
+      });
+
+      assert.equal(code, 0);
+      assert.equal(out, "MCP 问答已完成。\n");
+      assert.equal(disconnectCalls, 1);
+    } finally {
+      await mockServer.close();
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
 });
