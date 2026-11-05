@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 210" width="100%" height="100%">
+  <defs>
+    <style>
+      .text {
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      }
+      .title { font-size: 14px; font-weight: 600; fill: #1e293b; }
+      .sub { font-size: 11.5px; fill: #64748b; }
+      .code { font-size: 11.5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; fill: #047857; }
+    </style>
+
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#10b981" />
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#3b82f6" />
+    </marker>
+  </defs>
+
+  <!-- Card Background -->
+  <rect x="0" y="0" width="760" height="210" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+
+  <!-- Outer Resource Container -->
+  <rect x="24" y="20" width="712" height="170" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="1.8" />
+  <text x="44" y="46" class="text title" fill="#065f46">同一用户 (Resource) — 跨会话共享长期偏好 (Working Memory)</text>
+  <text x="44" y="66" class="text sub" fill="#047857">长期记住："待办按负责人分组"、"回答简洁"……（开启新对话也不会清空）</text>
+
+  <!-- Thread 1 -->
+  <rect x="44" y="84" width="276" height="86" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="182" y="110" text-anchor="middle" class="text title">旧会话 (Thread A)</text>
+  <text x="182" y="132" text-anchor="middle" class="text sub">1. "列 3 条提升专注力的建议"</text>
+  <text x="182" y="152" text-anchor="middle" class="text sub">2. "把第二项展开说说"（连续追问）</text>
+
+  <!-- Switch Command -->
+  <rect x="342" y="106" width="76" height="42" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5" />
+  <text x="380" y="124" text-anchor="middle" class="text sub" fill="#1e3a8a">发送指令</text>
+  <text x="380" y="140" text-anchor="middle" class="code" fill="#1d4ed8">新对话</text>
+
+  <line x1="320" y1="127" x2="338" y2="127" stroke="#3b82f6" stroke-width="1.8" marker-end="url(#arrow-blue)" />
+  <line x1="418" y1="127" x2="436" y2="127" stroke="#3b82f6" stroke-width="1.8" marker-end="url(#arrow-blue)" />
+
+  <!-- Thread 2 -->
+  <rect x="440" y="84" width="276" height="86" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.8" />
+  <text x="578" y="110" text-anchor="middle" class="text title" fill="#1e3a8a">新会话 (Thread B)</text>
+  <text x="578" y="132" text-anchor="middle" class="text sub" fill="#1e40af">不带 Thread A 的聊天记录</text>
+  <text x="578" y="152" text-anchor="middle" class="text sub" fill="#047857">但依然自动应用"按负责人分组"偏好</text>
+</svg>

@@ -24,3 +24,6 @@ logs/
 .wechat/
 .wechatbot/
 *wechat*credentials*.json
+
+# Local Agent memory and session state
+.memory/

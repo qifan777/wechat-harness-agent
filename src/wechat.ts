@@ -13,6 +13,8 @@ import {
 import {
   askPersonalAssistant,
   createPersonalAssistantAgent,
+  loadImageAttachmentsFromPaths,
+  type ImageAttachment,
 } from "./agent.js";
 import {
   collectCandidateSecrets,
@@ -20,6 +22,13 @@ import {
   loadModelConfig,
   redactSecrets,
 } from "./config.js";
+import {
+  NEW_CONVERSATION_REPLY,
+  getOrCreateActiveThreadId,
+  isNewConversationCommand,
+  rotateActiveThreadId,
+  type MemoryContext,
+} from "./memory.js";
 
 export const DEFAULT_MAX_REPLY_CHARS = 1500;
 export const DEFAULT_SEND_INTERVAL_MS = 1500;
@@ -357,6 +366,56 @@ export function formatInboundMessage(
   return combined.length > 0 ? combined : null;
 }
 
+const inMemorySessionThreads = new Map<string, string>();
+const latestThreadImages = new Map<string, readonly ImageAttachment[]>();
+const userMessageQueues = new Map<string, Promise<void>>();
+
+export function enqueueWeChatUserTask(
+  userId: string,
+  task: () => Promise<void>,
+): Promise<void> {
+  const key = userId.trim() || "default-user";
+  const previous = userMessageQueues.get(key) ?? Promise.resolve();
+  const next = previous
+    .catch(() => {})
+    .then(task)
+    .finally(() => {
+      if (userMessageQueues.get(key) === next) {
+        userMessageQueues.delete(key);
+      }
+    });
+  userMessageQueues.set(key, next);
+  return next;
+}
+
+function getWeChatActiveThreadId(
+  userId: string,
+  memoryDir?: string,
+): string {
+  if (memoryDir) {
+    return getOrCreateActiveThreadId(userId, memoryDir);
+  }
+  const existing = inMemorySessionThreads.get(userId);
+  if (existing) {
+    return existing;
+  }
+  const created = `thread-${userId}-${Date.now()}`;
+  inMemorySessionThreads.set(userId, created);
+  return created;
+}
+
+function rotateWeChatActiveThreadId(
+  userId: string,
+  memoryDir?: string,
+): string {
+  if (memoryDir) {
+    return rotateActiveThreadId(userId, memoryDir);
+  }
+  const next = `thread-${userId}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  inMemorySessionThreads.set(userId, next);
+  return next;
+}
+
 export interface WeChatMessageHandlerDeps {
   sendTyping: (userId: string) => Promise<void>;
   stopTyping?: ((userId: string) => Promise<void>) | undefined;
@@ -364,10 +423,14 @@ export interface WeChatMessageHandlerDeps {
   askAgent: (
     prompt: string,
     secrets: readonly (string | undefined)[],
+    memoryContext: MemoryContext,
+    imageAttachments: readonly ImageAttachment[],
   ) => Promise<string>;
   sendReply: (userId: string, segment: string) => Promise<void>;
   getSecrets?: ((msg: IncomingMessage) => readonly (string | undefined)[]) | undefined;
   botUserId?: string | undefined;
+  memoryDir?: string | undefined;
+  onNewConversation?: ((userId: string) => void | Promise<void>) | undefined;
   sendOptions?: SendSegmentedReplyOptions | undefined;
   logError?: ((message: string) => void) | undefined;
   resolveMediaPaths?:
@@ -380,6 +443,41 @@ export async function handleIncomingWeChatMessage(
   deps: WeChatMessageHandlerDeps,
 ): Promise<void> {
   if (isIgnoredWeChatMessage(msg, deps.botUserId)) {
+    return;
+  }
+
+  const baseSecrets = deps.getSecrets ? deps.getSecrets(msg) : [];
+  const secrets = [
+    ...baseSecrets,
+    typeof msg._contextToken === "string" ? msg._contextToken : undefined,
+  ];
+  const logError =
+    deps.logError ??
+    ((errLine: string) => {
+      process.stderr.write(`${redactSecrets(errLine, secrets)}\n`);
+    });
+
+  const rawText = typeof msg.text === "string" ? msg.text.trim() : "";
+  if (
+    (msg.type === "text" || msg.type === "voice") &&
+    !msg.quotedMessage &&
+    isNewConversationCommand(rawText)
+  ) {
+    if (deps.onNewConversation) {
+      await deps.onNewConversation(msg.userId);
+    } else {
+      rotateWeChatActiveThreadId(msg.userId, deps.memoryDir);
+    }
+    try {
+      await deps.sendReply(
+        msg.userId,
+        redactSecrets(NEW_CONVERSATION_REPLY, secrets),
+      );
+    } catch (sendError: unknown) {
+      const detail =
+        sendError instanceof Error ? sendError.message : String(sendError);
+      logError(redactSecrets(`${WECHAT_SEND_ERROR_LOG}（${detail}）`, secrets));
+    }
     return;
   }
 
@@ -397,16 +495,22 @@ export async function handleIncomingWeChatMessage(
     return;
   }
 
-  const baseSecrets = deps.getSecrets ? deps.getSecrets(msg) : [];
-  const secrets = [
-    ...baseSecrets,
-    typeof msg._contextToken === "string" ? msg._contextToken : undefined,
-  ];
-  const logError =
-    deps.logError ??
-    ((errLine: string) => {
-      process.stderr.write(`${redactSecrets(errLine, secrets)}\n`);
-    });
+  const threadId = getWeChatActiveThreadId(msg.userId, deps.memoryDir);
+  const memoryContext: MemoryContext = {
+    resource: msg.userId,
+    thread: threadId,
+  };
+
+  const directImages = loadImageAttachmentsFromPaths(mediaPaths);
+  if (directImages.length > 0) {
+    latestThreadImages.set(threadId, directImages);
+  }
+  const effectiveImages =
+    directImages.length > 0
+      ? directImages
+      : msg.quotedMessage?.type === "image"
+        ? (latestThreadImages.get(threadId) ?? [])
+        : [];
 
   const triggerTypingSafely = async (): Promise<void> => {
     try {
@@ -434,10 +538,15 @@ export async function handleIncomingWeChatMessage(
   typingTimer?.unref?.();
 
   try {
-    // 2. Call the Personal Assistant Agent independently (stateless single-turn)
+    // 2. Call the Personal Assistant Agent with user resource, active session thread, and multimodal image attachments
     let replyText = "";
     try {
-      const generated = await deps.askAgent(prompt, secrets);
+      const generated = await deps.askAgent(
+        prompt,
+        secrets,
+        memoryContext,
+        effectiveImages,
+      );
       const trimmed = generated.trim();
       if (trimmed.length === 0) {
         throw new Error("Empty model reply");
@@ -554,6 +663,7 @@ export interface RunWeChatDaemonOptions {
   envFilePath?: string | undefined;
   storageDir?: string | undefined;
   workspaceDir?: string | undefined;
+  memoryDir?: string | undefined;
   stdout?: Pick<NodeJS.WriteStream, "write"> | undefined;
   stderr?: Pick<NodeJS.WriteStream, "write"> | undefined;
   createBot?:
@@ -573,6 +683,11 @@ export async function runWeChatDaemon(
     options.storageDir ?? path.resolve(process.cwd(), ".wechat");
   const workspaceDir =
     options.workspaceDir ?? path.resolve(process.cwd(), "workspace");
+  const memoryDir =
+    options.memoryDir ??
+    (options.storageDir
+      ? path.join(path.dirname(path.resolve(options.storageDir)), ".memory")
+      : path.resolve(process.cwd(), ".memory"));
 
   const getSecrets = (extra: readonly (string | undefined)[] = []): string[] =>
     collectCandidateSecrets({
@@ -597,6 +712,7 @@ export async function runWeChatDaemon(
 
   const agent = createPersonalAssistantAgent(modelConfig, {
     workspaceDir,
+    memoryDir,
   });
 
   fs.mkdirSync(storageDir, { recursive: true });
@@ -650,61 +766,75 @@ export async function runWeChatDaemon(
   }
 
   bot.onMessage(async (msg: IncomingMessage) => {
-    const creds = bot.getCredentials();
-    const runtimeSecrets = getRuntimeSecrets(msg);
-    stdout.write(
-      `${redactSecrets(`[微信消息] 收到私聊消息 (${msg.type})：${msg.text || "[媒体消息]"}`, runtimeSecrets)}\n`,
-    );
-    await handleIncomingWeChatMessage(msg, {
-      botUserId: creds?.accountId,
-      getSecrets: (incoming) => getRuntimeSecrets(incoming),
-      resolveMediaPaths: async (incoming) => {
-        if (
-          !bot.download ||
-          (incoming.type !== "image" &&
-            incoming.type !== "file" &&
-            incoming.type !== "video")
-        ) {
-          return [];
-        }
-        const downloaded = await bot.download(incoming);
-        if (!downloaded) {
-          return [];
-        }
-        const mediaDir = path.join(workspaceDir, "wechat-media");
-        fs.mkdirSync(mediaDir, { recursive: true });
-        const ext =
-          downloaded.type === "image"
-            ? ".jpg"
-            : downloaded.type === "video"
-              ? ".mp4"
-              : "";
-        const safeName = (
-          downloaded.fileName ?? `${downloaded.type}-${Date.now()}${ext}`
-        ).replace(/[^a-zA-Z0-9._\-\u4e00-\u9fa5]/g, "_");
-        const targetPath = path.join(mediaDir, safeName);
-        fs.writeFileSync(targetPath, downloaded.data);
-        return [targetPath];
-      },
-      sendTyping: async (userId: string) => {
-        await bot.sendTyping(userId);
-      },
-      stopTyping: async (userId: string) => {
-        if (bot.stopTyping) {
-          await bot.stopTyping(userId);
-        }
-      },
-      askAgent: async (prompt: string, secrets: readonly (string | undefined)[]) =>
-        askPersonalAssistant(agent, prompt, secrets),
-      sendReply: async (userId: string, segment: string) => {
-        await bot.send(userId, segment);
-        stdout.write(
-          `${redactSecrets(`[微信消息] 已回复 (${segment.length} 字)`, runtimeSecrets)}\n`,
-        );
-      },
-      logError: (errMsg: string) => {
-        stderr.write(`${redactSecrets(errMsg, runtimeSecrets)}\n`);
-      },
+    await enqueueWeChatUserTask(msg.userId, async () => {
+      const creds = bot.getCredentials();
+      const runtimeSecrets = getRuntimeSecrets(msg);
+      stdout.write(
+        `${redactSecrets(`[微信消息] 收到私聊消息 (${msg.type})：${msg.text || "[媒体消息]"}`, runtimeSecrets)}\n`,
+      );
+      await handleIncomingWeChatMessage(msg, {
+        botUserId: creds?.accountId,
+        memoryDir,
+        getSecrets: (incoming) => getRuntimeSecrets(incoming),
+        resolveMediaPaths: async (incoming) => {
+          if (
+            !bot.download ||
+            (incoming.type !== "image" &&
+              incoming.type !== "file" &&
+              incoming.type !== "video")
+          ) {
+            return [];
+          }
+          const downloaded = await bot.download(incoming);
+          if (!downloaded) {
+            return [];
+          }
+          const mediaDir = path.join(workspaceDir, "wechat-media");
+          fs.mkdirSync(mediaDir, { recursive: true });
+          const ext =
+            downloaded.type === "image"
+              ? ".jpg"
+              : downloaded.type === "video"
+                ? ".mp4"
+                : "";
+          const safeName = (
+            downloaded.fileName ?? `${downloaded.type}-${Date.now()}${ext}`
+          ).replace(/[^a-zA-Z0-9._\-\u4e00-\u9fa5]/g, "_");
+          const targetPath = path.join(mediaDir, safeName);
+          fs.writeFileSync(targetPath, downloaded.data);
+          return [targetPath];
+        },
+        sendTyping: async (userId: string) => {
+          await bot.sendTyping(userId);
+        },
+        stopTyping: async (userId: string) => {
+          if (bot.stopTyping) {
+            await bot.stopTyping(userId);
+          }
+        },
+        askAgent: async (
+          prompt: string,
+          secrets: readonly (string | undefined)[],
+          memoryContext: MemoryContext,
+          imageAttachments: readonly ImageAttachment[],
+        ) =>
+          askPersonalAssistant(
+            agent,
+            prompt,
+            secrets,
+            memoryContext,
+            imageAttachments,
+          ),
+        sendReply: async (userId: string, segment: string) => {
+          await bot.send(userId, segment);
+          stdout.write(
+            `${redactSecrets(`[微信消息] 已回复 (${segment.length} 字)`, runtimeSecrets)}\n`,
+          );
+        },
+        logError: (errMsg: string) => {
+          stderr.write(`${redactSecrets(errMsg, runtimeSecrets)}\n`);
+        },
+      });
     });
   });
 

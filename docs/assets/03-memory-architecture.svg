@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 250" width="100%" height="100%">
+  <defs>
+    <style>
+      .text {
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      }
+      .title { font-size: 14px; font-weight: 600; fill: #1e293b; }
+      .sub { font-size: 12px; fill: #64748b; }
+      .code { font-size: 11.5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; fill: #475569; }
+      .tag { font-size: 11px; font-weight: 600; fill: #047857; }
+    </style>
+
+    <marker id="arrow-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#3b82f6" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#10b981" />
+    </marker>
+  </defs>
+
+  <!-- Card Background -->
+  <rect x="0" y="0" width="760" height="250" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+
+  <!-- Left Column: Entry Channels -->
+  <rect x="28" y="34" width="152" height="68" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="104" y="62" text-anchor="middle" class="text title">微信私聊</text>
+  <text x="104" y="83" text-anchor="middle" class="code">npm run wechat</text>
+
+  <rect x="28" y="148" width="152" height="68" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="104" y="176" text-anchor="middle" class="text title">终端命令行</text>
+  <text x="104" y="197" text-anchor="middle" class="code">npm run ask</text>
+
+  <!-- Center Top: Personal Assistant Agent -->
+  <rect x="236" y="34" width="216" height="68" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.8" />
+  <text x="344" y="62" text-anchor="middle" class="text title" fill="#1e3a8a">个人资料助理 (Agent)</text>
+  <text x="344" y="83" text-anchor="middle" class="text sub" fill="#3b82f6">携带 resource 与 thread 调用</text>
+
+  <!-- Center Bottom: Mastra Memory (New in Chapter 3) -->
+  <rect x="236" y="138" width="216" height="84" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="1.8" />
+  <rect x="390" y="128" width="52" height="18" rx="4" fill="#d1fae5" />
+  <text x="416" y="141" text-anchor="middle" class="text tag">本章新增</text>
+  <text x="344" y="166" text-anchor="middle" class="text title" fill="#065f46">Mastra Memory</text>
+  <text x="344" y="187" text-anchor="middle" class="text sub" fill="#047857">会话历史 (Thread · 最近 20 条)</text>
+  <text x="344" y="206" text-anchor="middle" class="text sub" fill="#047857">长期偏好 (Resource · Working Memory)</text>
+
+  <!-- Right Top: LLM API -->
+  <rect x="512" y="34" width="220" height="68" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="622" y="62" text-anchor="middle" class="text title">大模型 API</text>
+  <text x="622" y="83" text-anchor="middle" class="text sub">生成回复 + 工具调用更新偏好</text>
+
+  <!-- Right Bottom: LibSQL Local Storage (New in Chapter 3) -->
+  <rect x="512" y="138" width="220" height="84" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="1.8" />
+  <rect x="668" y="128" width="52" height="18" rx="4" fill="#d1fae5" />
+  <text x="694" y="141" text-anchor="middle" class="text tag">本章新增</text>
+  <text x="622" y="166" text-anchor="middle" class="text title" fill="#065f46">本地存储 (@mastra/libsql)</text>
+  <text x="622" y="187" text-anchor="middle" class="code" fill="#047857">.memory/memory.db</text>
+  <text x="622" y="206" text-anchor="middle" class="text sub" fill="#047857">重启不丢 · 免外部数据库</text>
+
+  <!-- Arrows -->
+  <!-- WeChat -> Agent -->
+  <line x1="180" y1="68" x2="232" y2="68" stroke="#3b82f6" stroke-width="1.8" marker-end="url(#arrow-blue)" />
+
+  <!-- CLI -> Agent -->
+  <path d="M 180 182 L 206 182 L 206 82 L 232 82" fill="none" stroke="#94a3b8" stroke-width="1.8" marker-end="url(#arrow-gray)" />
+
+  <!-- Agent <-> Memory -->
+  <line x1="344" y1="106" x2="344" y2="134" stroke="#10b981" stroke-width="1.8" marker-start="url(#arrow-green)" marker-end="url(#arrow-green)" />
+
+  <!-- Agent <-> LLM -->
+  <line x1="456" y1="68" x2="508" y2="68" stroke="#94a3b8" stroke-width="1.8" marker-start="url(#arrow-gray)" marker-end="url(#arrow-gray)" />
+
+  <!-- Memory <-> LibSQL -->
+  <line x1="456" y1="180" x2="508" y2="180" stroke="#10b981" stroke-width="1.8" marker-start="url(#arrow-green)" marker-end="url(#arrow-green)" />
+</svg>

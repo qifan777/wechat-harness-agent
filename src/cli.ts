@@ -8,11 +8,20 @@ import {
   redactSecrets,
   validateQuestionArgs,
 } from "./config.js";
+import {
+  CLI_RESOURCE_ID,
+  NEW_CONVERSATION_REPLY,
+  getOrCreateActiveThreadId,
+  isNewConversationCommand,
+  rotateActiveThreadId,
+} from "./memory.js";
 
 export interface RunCliOptions {
   argv?: readonly string[];
   env?: NodeJS.ProcessEnv;
   cwd?: string;
+  memoryDir?: string;
+  resourceId?: string;
   stdout?: (text: string) => void;
   stderr?: (text: string) => void;
   createAgent?: typeof createPersonalAssistantAgent;
@@ -47,6 +56,8 @@ export async function runCli(options: RunCliOptions = {}): Promise<number> {
   const cwd = options.cwd ?? process.cwd();
   const envFilePath = path.resolve(cwd, ".env");
   const workspaceDir = path.resolve(cwd, "workspace");
+  const memoryDir = options.memoryDir ?? path.resolve(cwd, ".memory");
+  const resourceId = options.resourceId ?? CLI_RESOURCE_ID;
   const writeStdout =
     options.stdout ?? ((text: string) => process.stdout.write(text));
   const writeStderr =
@@ -58,11 +69,22 @@ export async function runCli(options: RunCliOptions = {}): Promise<number> {
 
   try {
     const question = validateQuestionArgs(argv);
+
+    if (isNewConversationCommand(question)) {
+      rotateActiveThreadId(resourceId, memoryDir);
+      writeStdout(`${NEW_CONVERSATION_REPLY}\n`);
+      return 0;
+    }
+
     const config = loadModelConfig({ env, envFilePath });
     secrets.push(config.apiKey);
 
-    const agent = createAgentFn(config, { workspaceDir });
-    const answer = await askPersonalAssistant(agent, question, secrets);
+    const threadId = getOrCreateActiveThreadId(resourceId, memoryDir);
+    const agent = createAgentFn(config, { workspaceDir, memoryDir });
+    const answer = await askPersonalAssistant(agent, question, secrets, {
+      resource: resourceId,
+      thread: threadId,
+    });
     const safeAnswer = redactSecrets(answer, secrets);
     writeStdout(`${safeAnswer}\n`);
     return 0;
