@@ -37,9 +37,21 @@
 
 ## 先跑起来看看
 
-看不懂命令也没关系，第 1 章会一步步带你做。想先试试的话：
+不想从零开始写，也可以直接把成品跑起来。最省事的办法是打开你的 AI 编程工具，把下面这段话发给它：
+
+```text
+帮我把 https://github.com/qifan777/wechat-harness-agent.git 克隆到本地并跑起来：
+1. 安装依赖（npm ci）
+2. 复制 .env.example 为 .env，把 MODEL_API_KEY 填成：在这里填你的密钥
+3. 运行 npm run ask -- "用一句话介绍你自己" 验证模型是否接通
+4. 验证通过后启动 npm run wechat，把扫码链接发给我
+```
+
+想自己敲命令的话，依次运行：
 
 ```sh
+git clone https://github.com/qifan777/wechat-harness-agent.git
+cd wechat-harness-agent
 npm ci
 cp .env.example .env   # 打开 .env，填入模型的接口地址、密钥和模型名
 npm run ask -- "用一句话介绍你自己"
